@@ -4,6 +4,7 @@ use std::io::stdin;
 
 use websocket::{Message, OwnedMessage};
 use websocket::client::ClientBuilder;
+use websocket::header::Headers;
 
 pub struct Socket {
 
@@ -17,9 +18,15 @@ impl Socket {
     }
 
     pub fn run(&self) {
+        let mut headers = Headers::new();
+        headers.set_raw("Authorization", vec![b"password".to_vec()]);
+        headers.set_raw("Num-Shards", vec![b"1".to_vec()]);
+        headers.set_raw("User-Id", vec![b"test-user-id".to_vec()]);
+
         let client = ClientBuilder::new("ws://localhost:8012")
             .unwrap()
             .add_protocol("rust-websocket")
+            .custom_headers(&headers)
             .connect_insecure()
             .unwrap();
 
