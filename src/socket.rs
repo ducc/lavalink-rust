@@ -1,5 +1,6 @@
 extern crate serde_json;
 
+use ::player::*;
 use ::node::*;
 use ::opcodes::*;
 use ::stats::*;
@@ -8,6 +9,7 @@ use std::thread;
 use std::sync::mpsc::channel;
 use std::io::stdin;
 use std::str::FromStr;
+use std::collections::HashMap;
 
 use websocket::{Message, OwnedMessage};
 use websocket::client::ClientBuilder;
@@ -15,14 +17,14 @@ use websocket::header::Headers;
 
 use serde_json::{Value, Error};
 
-pub struct Socket {
-
+pub struct Socket<'a, T: PlayerListener + 'static> {
+    pub players: HashMap<&'a str, Player<T>>
 }
 
-impl Socket {
+impl<'a, T: PlayerListener + 'static> Socket<'a, T> {
     pub fn new() -> Self {
         Self {
-
+            players: HashMap::new()
         }
     }
 
@@ -118,9 +120,45 @@ impl Socket {
                     // text msg!!!!!!!!
                     OwnedMessage::Text(data) => {
                         println!("Receive loop text message: {}", data);
-                        //self.handle_message(data.clone());
 
-                        Socket::handle_message(data);
+                        let json: Value = serde_json::from_str(data.as_ref()).unwrap();
+                        let op = json["op"].as_str().unwrap();
+                        let opcode = Opcode::from_str(op).unwrap();
+
+                        use Opcode::*;
+
+                        match opcode {
+                            SendWS => {},
+                            ValidationRequest => {},
+                            IsConnectedRequest => {},
+                            PlayerUpdate => {},
+                            Stats => {
+                                let stats = RemoteStats::from_json(&json);
+                                println!("Stats = {:?}", stats);
+                            },
+                            Event => {
+                                let guild_id = json["guildId"].as_str().unwrap();
+                                let track = json["track"].as_str().unwrap();
+
+                                match json["type"].as_str().unwrap() {
+                                    "TrackEndEvent" => {
+                                        let reason = json["reason"].as_str().unwrap();
+                                    },
+                                    "TrackExceptionEvent" => {
+                                        let error = json["error"].as_str().unwrap();
+                                    },
+                                    "TrackStuckEvent" => {
+                                        let threshold_ms = json["thresholdMs"].as_i64().unwrap();
+                                    },
+                                    unexpected => {
+                                        println!("Unexpected event type: {}", unexpected)
+                                    }
+                                }
+
+                                // todo get Player by guild_id & send event to PlayerListener
+                            }
+                            _ => {},
+                        }
                     },
                     // received something else?
                     _ => {
@@ -134,9 +172,7 @@ impl Socket {
             let mut input = String::new();
             stdin().read_line(&mut input).unwrap();
 
-            let trimmed = input.trim();
-
-            let message = match trimmed {
+            let message = match input.trim() {
                 "/close" => {
                     // close the connection
                     let _ = tx.send(OwnedMessage::Close(None));
@@ -146,9 +182,9 @@ impl Socket {
                     // send a ping
                     OwnedMessage::Ping(b"PING".to_vec())
                 },
-                _ => {
+                text => {
                     // just send text
-                    OwnedMessage::Text(trimmed.to_string())
+                    OwnedMessage::Text(text.to_string())
                 }
             };
 
@@ -168,22 +204,6 @@ impl Socket {
         let _ = receive_loop.join();
 
         println!("goodbye my dude");
-    }
-
-    pub fn handle_message(text: String) {
-        let json: Value = serde_json::from_str(text.as_ref()).unwrap();
-        let op = json["op"].as_str().unwrap();
-        let opcode = Opcode::from_str(op).unwrap();
-
-        use Opcode::*;
-
-        match opcode {
-            Stats => {
-                let stats = RemoteStats::from_json(&json);
-                println!("Stats = {:?}", stats);
-            },
-            _ => {},
-        }
     }
 }
 

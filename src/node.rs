@@ -1,6 +1,6 @@
 #[derive(Clone)]
 pub struct Node {
-    server_uri: String,
+    pub server_uri: String,
     password: String,
     // todo stats
 }

@@ -2,6 +2,8 @@ extern crate lavalink;
 
 use lavalink::*;
 
+use std::collections::HashMap;
+
 fn main() {
     // creating a lavalink client
     let client = Client::new("testing-user", 1, 5000);
@@ -10,15 +12,28 @@ fn main() {
     let mut node_manager = client.node_manager;
     node_manager.add_node("0.0.0.0:25565".to_string(), "lolpasswordxd".to_string());
 
+    // getting the Node instance
+    let nodes = node_manager.get_nodes();
+    let node = nodes.iter()
+        .find(|n| n.server_uri == "0.0.0.0:25565".to_string())
+        .unwrap();
+
     // creating a new Player
-    let player: Player<Listener> = Player::new("272410239947767808".to_owned());
+    let mut player: Player<Listener> = Player::new("272410239947767808".to_owned());
 
-    // registering a listener
-    let listener = Listener {};
-    let mut listener_manager = player.player_listener_manager;
-    listener_manager.add_listener(listener);
+    // registering a listener - in a new scope so player can be borrowed mutably and returned
+    // before inserted into players
+    {
+        let listener = Listener {};
+        let mut listener_manager = &mut player.player_listener_manager;
+        listener_manager.add_listener(listener);
+    }
 
-    let socket = Socket::new();
+    // adding the player to the PlayerManager
+    let mut players = HashMap::new();
+    players.insert("272410239947767808", &player);
+
+    let socket: Socket<Listener> = Socket::new();
     socket.run();
 }
 

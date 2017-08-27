@@ -1,4 +1,3 @@
-
 pub trait PlayerListener {
     fn on_player_pause(guild_id: String);
 

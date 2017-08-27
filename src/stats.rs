@@ -18,10 +18,10 @@ pub struct RemoteStats {
     pub playing_players: i32,
     pub uptime: i64,
 
-    pub mem_free: i32,
-    pub mem_used: i32,
-    pub mem_allocated: i32,
-    pub mem_reservable: i32,
+    pub mem_free: i64,
+    pub mem_used: i64,
+    pub mem_allocated: i64,
+    pub mem_reservable: i64,
 
     pub cpu_cores: i32,
     pub system_load: f64,
@@ -40,10 +40,10 @@ impl RemoteStats {
             playing_players: json["playingPlayers"].as_i64().unwrap() as i32,
             uptime: json["uptime"].as_i64().unwrap(),
 
-            mem_free: memory["free"].as_i64().unwrap() as i32,
-            mem_used: memory["used"].as_i64().unwrap() as i32,
-            mem_allocated: memory["allocated"].as_i64().unwrap() as i32,
-            mem_reservable: memory["reservable"].as_i64().unwrap() as i32,
+            mem_free: memory["free"].as_i64().unwrap(),
+            mem_used: memory["used"].as_i64().unwrap(),
+            mem_allocated: memory["allocated"].as_i64().unwrap(),
+            mem_reservable: memory["reservable"].as_i64().unwrap(),
 
             cpu_cores: cpu["cores"].as_i64().unwrap() as i32,
             system_load: cpu["systemLoad"].as_f64().unwrap(),
