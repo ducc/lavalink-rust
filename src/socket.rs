@@ -106,8 +106,14 @@ impl Socket {
                             }
                         }
                     },
-                    // server sent another message, its not a close message or a ping :O
-                    _ => println!("Receive loop: {:?}", message)
+                    // text msg!!!!!!!!
+                    OwnedMessage::Text(data) => {
+                        println!("Receive loop text message: {}", data);
+                    },
+                    // received something else?
+                    _ => {
+                        println!("Receive loop: {:?}", message)
+                    }
                 }
             }
         });
@@ -150,6 +156,10 @@ impl Socket {
         let _ = receive_loop.join();
 
         println!("goodbye my dude");
+    }
+
+    pub fn handle_message(&self, text: String) {
+        
     }
 }
 
