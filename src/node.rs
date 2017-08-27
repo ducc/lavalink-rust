@@ -1,5 +1,3 @@
-use ::*;
-
 #[derive(Clone)]
 pub struct Node {
     server_uri: String,

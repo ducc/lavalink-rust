@@ -1,15 +1,16 @@
+
 pub trait PlayerListener {
-    fn on_player_pause();
+    fn on_player_pause(guild_id: String);
 
-    fn on_player_resume();
+    fn on_player_resume(guild_id: String);
 
-    fn on_track_start(track: String);
+    fn on_track_start(guild_id: String, track: String);
 
-    fn on_track_end(track: String, end_reason: String);
+    fn on_track_end(guild_id: String, track: String, end_reason: String);
 
-    fn on_track_exception(track: String, exception: String);
+    fn on_track_exception(guild_id: String, track: String, exception: String);
 
-    fn on_track_stuck(track: String, threshold_ms: i64);
+    fn on_track_stuck(guild_id: String, track: String, threshold_ms: i64);
 }
 
 pub struct PlayerListenerManager<T: PlayerListener + 'static> {

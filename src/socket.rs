@@ -1,3 +1,5 @@
+use ::node::*;
+
 use std::thread;
 use std::sync::mpsc::channel;
 use std::io::stdin;
@@ -159,7 +161,7 @@ impl Socket {
     }
 
     pub fn handle_message(&self, text: String) {
-        
+
     }
 }
 

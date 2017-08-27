@@ -75,12 +75,13 @@ impl ToString for Opcode {
             PlayerUpdate => "playerUpdate",
             Stats => "stats",
             Event => "event",
+            Unknown => "unknown",
         }.to_string()
     }
 }
 
 impl FromStr for Opcode {
-    type Err = Opcode::Unknown;
+    type Err = Opcode;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         use Opcode::*;
@@ -103,7 +104,7 @@ impl FromStr for Opcode {
             "stats" => Stats,
             "event" => Event,
             _ => {
-                return Err(Err);
+                return Err(Unknown);
             },
         };
 

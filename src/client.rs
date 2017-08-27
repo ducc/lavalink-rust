@@ -1,4 +1,7 @@
-use ::*;
+use ::socket::*;
+use ::node::*;
+use ::audio::*;
+use ::player::*;
 
 pub struct Client {
     pub user_id: String,
@@ -7,7 +10,6 @@ pub struct Client {
     pub socket_manager: SocketManager,
     pub node_manager: NodeManager,
     pub audio_manager: AudioManager,
-    pub player_manager: PlayerManager,
 }
 
 impl<'a> Client {
@@ -19,7 +21,6 @@ impl<'a> Client {
             socket_manager: SocketManager::new(),
             node_manager: NodeManager::new(),
             audio_manager: AudioManager::new(),
-            player_manager: PlayerManager::new(),
         }
     }
 

@@ -1,31 +1,24 @@
 mod listener;
-mod manager;
 mod state;
 
-use super::*;
+use super::socket::*;
+
 pub use self::listener::*;
-pub use self::manager::*;
 pub use self::state::*;
 
 pub struct Player<T: PlayerListener + 'static> {
-    socket: Socket,
     guild_id: String,
-    player_listener_manager: PlayerListenerManager<T>,
+    pub player_listener_manager: PlayerListenerManager<T>,
     player_state: PlayerState,
 }
 
 impl<T: PlayerListener + 'static> Player<T> {
-    pub fn new(socket: Socket, guild_id: String) -> Self {
+    pub fn new(guild_id: String) -> Self {
         Self {
-            socket,
             guild_id,
             player_listener_manager: PlayerListenerManager::new(),
             player_state: PlayerState::new(),
         }
-    }
-
-    pub fn set_socket(&mut self, socket: Socket) {
-        unimplemented!()
     }
 
     pub fn play_track(&self, track: String) {
