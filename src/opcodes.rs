@@ -1,4 +1,5 @@
 use std::string::ToString;
+use std::str::FromStr;
 
 pub enum Opcode {
     // Make the server queue a voice connection
@@ -48,6 +49,9 @@ pub enum Opcode {
 
     // Server emitted an event
     Event,
+
+    // Unknown opcode
+    Unknown,
 }
 
 impl ToString for Opcode {
@@ -75,11 +79,13 @@ impl ToString for Opcode {
     }
 }
 
-impl Opcode {
-    pub fn from_string(string: String) -> Self {
+impl FromStr for Opcode {
+    type Err = Opcode::Unknown;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
         use Opcode::*;
 
-        match string {
+        let op = match s {
             "connect" => Connect,
             "voiceUpdate" => VoiceUpdate,
             "disconnect" => Disconnect,
@@ -96,6 +102,11 @@ impl Opcode {
             "playerUpdate" => PlayerUpdate,
             "stats" => Stats,
             "event" => Event,
-        }
+            _ => {
+                return Err(Err);
+            },
+        };
+
+        Ok(op)
     }
 }
