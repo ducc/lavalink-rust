@@ -17,6 +17,9 @@ fn main() {
     let listener = Listener {};
     let mut listener_manager = player.player_listener_manager;
     listener_manager.add_listener(listener);
+
+    let socket = Socket::new();
+    socket.run();
 }
 
 struct Listener;

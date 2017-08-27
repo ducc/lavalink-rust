@@ -1,6 +1,9 @@
 extern crate tokio_core;
 extern crate futures;
 extern crate websocket;
+extern crate serde;
+extern crate serde_json;
+#[macro_use] extern crate serde_derive;
 
 mod client;
 mod socket;

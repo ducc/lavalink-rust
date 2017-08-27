@@ -1,6 +1,7 @@
 use std::string::ToString;
 use std::str::FromStr;
 
+#[derive(Debug)]
 pub enum Opcode {
     // Make the server queue a voice connection
     Connect,

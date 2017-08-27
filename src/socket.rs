@@ -1,12 +1,19 @@
+extern crate serde_json;
+
 use ::node::*;
+use ::opcodes::*;
+use ::stats::*;
 
 use std::thread;
 use std::sync::mpsc::channel;
 use std::io::stdin;
+use std::str::FromStr;
 
 use websocket::{Message, OwnedMessage};
 use websocket::client::ClientBuilder;
 use websocket::header::Headers;
+
+use serde_json::{Value, Error};
 
 pub struct Socket {
 
@@ -111,6 +118,9 @@ impl Socket {
                     // text msg!!!!!!!!
                     OwnedMessage::Text(data) => {
                         println!("Receive loop text message: {}", data);
+                        //self.handle_message(data.clone());
+
+                        Socket::handle_message(data);
                     },
                     // received something else?
                     _ => {
@@ -160,8 +170,20 @@ impl Socket {
         println!("goodbye my dude");
     }
 
-    pub fn handle_message(&self, text: String) {
+    pub fn handle_message(text: String) {
+        let json: Value = serde_json::from_str(text.as_ref()).unwrap();
+        let op = json["op"].as_str().unwrap();
+        let opcode = Opcode::from_str(op).unwrap();
 
+        use Opcode::*;
+
+        match opcode {
+            Stats => {
+                let stats = RemoteStats::from_json(&json);
+                println!("Stats = {:?}", stats);
+            },
+            _ => {},
+        }
     }
 }
 
