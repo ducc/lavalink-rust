@@ -3,5 +3,8 @@ name = "testing"
 version = "0.1.0"
 authors = ["sponges <spongybacon@hotmail.co.uk>"]
 
+[dependencies]
+tokio-core = "0.1"
+
 [dependencies.lavalink]
 path = "../"
